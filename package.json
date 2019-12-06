@@ -1,5 +1,5 @@
 {
-  "name": "vue-template-sass-in-string-loader",
+  "name": "sass-in-template-string-loader",
   "private": true,
   "version": "0.0.1",
   "description": "Compile Vue sass templates in template strings at build time.",
@@ -15,14 +15,17 @@
     "test:watch": "jest --watchAll"
   },
   "dependencies": {
+    "fs-extra": "^8.1.0",
     "loader-utils": "^1.2.3",
     "node-sass": "^4.13.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.0.22",
     "@types/loader-utils": "^1.1.3",
     "@types/node": "^12.12.7",
     "@types/node-sass": "^4.11.0",
+    "@types/source-map": "^0.5.7",
     "jest": "^24.9.0",
     "rimraf": "^3.0.0",
     "ts-jest": "^24.1.0",

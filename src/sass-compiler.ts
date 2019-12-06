@@ -1,33 +1,52 @@
-import { existsSync, mkdirSync, writeFileSync } from "fs"
-import sass from "node-sass"
+import { mkdirp, pathExists, writeFile } from "fs-extra"
+import sass, { Options, Result, SassError } from "node-sass"
+import { dirname } from "path"
 import { FoundTemplate } from "./find-sass-template"
 import { UpdateSourceOptions } from "./update-source"
 
-export function sassCompiler(
+export async function sassCompiler(
   foundTemplate: FoundTemplate,
-  options: UpdateSourceOptions
+  options: UpdateSourceOptions,
+  isTest?: boolean
 ) {
+  const outputFilePath = options.outputFilePath
 
-  const scssDirExist = existsSync("extracted/scss")
-  console.log("exist", scssDirExist)
-  if (scssDirExist === false) {
-    mkdirSync("extracted/scss", { recursive: true })
-  }
+  if (!outputFilePath)
+    throw new Error("No output file path provided !")
 
-  const cssDirExist = existsSync("extracted/css")
-  if (!cssDirExist) {
-    mkdirSync("extracted/css", { recursive: true })
-  }
+  const outputDir = dirname(outputFilePath)
 
-  writeFileSync("extracted/scss/style.scss", foundTemplate.value)
-
-  const result = sass.renderSync({
-    file: "extracted/scss/style.scss",
+  let returnBoolean = false
+  await sassRenderAsync({
+    data: foundTemplate.value,
     outputStyle: "expanded"
+  }).then(async (result) => {
+    if (!isTest) {
+      const cssDirExist = await pathExists(outputDir)
+      if (!cssDirExist) {
+        await mkdirp(outputDir)
+      }
+      await writeFile(outputFilePath, result.css.toString())
+    }
+
+    console.log("Css generated: ", result.css.toString())
+    returnBoolean = true
+  }, (error: SassError) => {
+    throw new Error(`Sass Compiler Error: ${error.stack}`)
   })
 
-  writeFileSync("extracted/css/style.css", result.css.toString())
+  return returnBoolean
+}
 
-  console.log("Css generated: ", result.css.toString())
-
+function sassRenderAsync(
+  options: Options
+  ): Promise<Result> {
+  return new Promise((resolve, reject) => {
+    sass.render(options, (err, result) => {
+      if (err)
+        reject(err)
+      else
+        resolve(result)
+    })
+  })
 }
