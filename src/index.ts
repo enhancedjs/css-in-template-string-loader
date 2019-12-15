@@ -9,14 +9,20 @@ export = async function (source: string) {
     fileName: basename(this.resourcePath)
   })
 
-  const { result, updated } = await updateSource(source, options)
+  const updated = await updateSource(source)
+  if (!updated)
+    return source
 
-  console.info(`Result: '${result}'`)
-  console.info(`Updated: '${updated}'`)
-  console.info(
-    `Source file '${options.fileName}': ${updated ? "updated" : "same"}`
-  )
-  if (source !== result)
-    console.log("==> source:", result)
+  const { result, cssResultCode, cssSourceCode, cssSyntax } = updated
+
+  // TODO: Save the content of 'cssSourceCode' somewhere
+
+  // console.info(`Result: '${result}'`)
+  // console.info(`Updated: '${updated}'`)
+  // console.info(
+  //   `Source file '${options.fileName}': ${updated ? "updated" : "same"}`
+  // )
+  // if (source !== result)
+  //   console.log("==> source:", result)
   return result
 }

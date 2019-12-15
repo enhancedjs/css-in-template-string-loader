@@ -1,51 +1,26 @@
-import { findSassTemplate } from "./find-sass-template"
-import { sassCompiler } from "./sass-compiler"
+import { CssSyntax, findSassTemplate } from "./find-sass-template"
+import { compileSassCode } from "./sass-compiler"
 
-export interface UpdatedSource {
+export interface UpdateSourceOutput {
   result: string
-  updated: boolean,
-  cssIsGenerated: boolean
+  cssSourceCode: string
+  cssSyntax: CssSyntax
+  cssResultCode: string
 }
 
-export interface UpdateSourceOptions {
-  outputFilePath?: string
-  filePath: string
-  fileName: string
-  sourceMap?: any
-}
+export async function updateSource(source: string): Promise<UpdateSourceOutput | undefined> {
+  const foundTemplate = findSassTemplate(source)
+  if (!foundTemplate)
+    return
 
-export async function updateSource(
-  source: string,
-  options: UpdateSourceOptions,
-  isTest?: boolean
-): Promise<UpdatedSource> {
+  const cssCode = await compileSassCode(foundTemplate)
 
-  const foundTemplate = findSassTemplate(source, options)
-
-  if (!foundTemplate) {
-    return {
-      result: source,
-      updated: false,
-      cssIsGenerated: false
-    }
-  }
-
-  let cssIsGenerated: boolean
-  if (isTest) {
-    cssIsGenerated = await sassCompiler(foundTemplate, options, true)
-  } else {
-    cssIsGenerated = await sassCompiler(foundTemplate, options)
-  }
-  // console.log("FounTemplate: ", foundTemplate)
-
-  let result = source
-  result =
-    result.substr(0, foundTemplate.start) +
-    result.substr(foundTemplate.end)
+  const result = source.substr(0, foundTemplate.start) + source.substr(foundTemplate.end)
 
   return {
     result,
-    updated: true,
-    cssIsGenerated
+    cssSourceCode: foundTemplate.code,
+    cssSyntax: foundTemplate.tagName,
+    cssResultCode: cssCode
   }
 }
