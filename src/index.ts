@@ -1,10 +1,13 @@
+import { sassInTemplateStringLoader } from "./loader"
 import { updateSource } from "./update-source"
 
 const pluginName = "SassInTemplateString"
 
-class SassInTemplateString {
+export default class SassInTemplateString {
 
-  constructor() {}
+  static loader = sassInTemplateStringLoader
+
+  constructor() { }
 
   apply(compiler: any) {
     compiler.hooks.thisCompilation.tap(pluginName, (compilation: any) => {
@@ -38,8 +41,6 @@ class SassInTemplateString {
   }
 
 }
-
-module.exports = SassInTemplateString
 
 
 
