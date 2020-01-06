@@ -1,9 +1,8 @@
 import sass, { Options, Result } from "node-sass"
-import { FoundTemplate } from "./find-sass-template"
 
-export async function compileSassCode(foundTemplate: FoundTemplate) {
+export async function compileSassCode(cssCode: string) {
   const result = await sassRenderAsync({
-    data: foundTemplate.value,
+    data: cssCode,
     outputStyle: "expanded"
   })
   return result.css.toString()
