@@ -1,25 +1,31 @@
 import { writeFile } from "fs-extra"
-import { sassInTemplateStringLoader } from "./loader"
+import { CssSyntax } from "./find-sass-template"
 import { compileSassCode } from "./sass-compiler"
+import { updateSource } from "./update-source"
 
 const pluginName = "SassInTemplateString"
 
 interface Options {
   outputFilePath: string
 }
+interface CssChunk {
+  code: string
+  syntax: CssSyntax
+  assetPath: string
+}
 
 export default class SassInTemplateString {
 
-  static loader = sassInTemplateStringLoader
   outputFilePath: string
 
   constructor(options: Options) {
     this.outputFilePath = options.outputFilePath
+    if (!this.outputFilePath)
+          throw new Error("No output file path provided !")
   }
 
   apply(compiler: any) {
-    const loader = SassInTemplateString.loader
-    let cssChunks: string[]
+    let cssChunks: CssChunk[]
 
     compiler.hooks.beforeCompile.tapAsync(pluginName, (params: any, callback: any) => {
       cssChunks = []
@@ -31,13 +37,15 @@ export default class SassInTemplateString {
         modules.forEach((mod: any) => {
           const assetPath: string = mod.request
           if (assetPath.endsWith(".ts") || assetPath.endsWith(".js")) {
-            const resultReturned = loader(mod._source._value)
-            if (typeof resultReturned === "string") {
-              mod._source._value = resultReturned
-            } else {
-              const { result, cssSourceCode, cssSyntax, cssCodeWithoutTag } = resultReturned
+            const updated = updateSource(mod._source._value)
+            if (updated) {
+              const { result, cssSourceCode, cssSyntax, cssCodeWithoutTag } = updated
               mod._source._value = result
-              cssChunks.push(cssCodeWithoutTag)
+              cssChunks.push({
+                code: cssCodeWithoutTag,
+                syntax: cssSyntax,
+                assetPath
+              })
             }
           }
         })
@@ -46,15 +54,30 @@ export default class SassInTemplateString {
 
 
     compiler.hooks.done.tapAsync(pluginName, async (stats: any) => {
-      if (!this.outputFilePath)
-          throw new Error("No output file path provided !")
-
       const cssResults = []
       for (const cssChunk of cssChunks) {
-        const cssCode = await compileSassCode(cssChunk)
-        cssResults.push(cssCode)
+        try {
+          switch (cssChunk.syntax) {
+            case "scss":
+              cssResults.push(await compileSassCode(cssChunk.code, "scss"))
+              break
+
+            case "sass":
+              cssResults.push(await compileSassCode(cssChunk.code, "sass"))
+              break
+
+            case "css":
+              cssResults.push(cssChunk.code)
+              break
+
+            default:
+              throw new Error("Syntax type must be specified")
+          }
+        } catch (error) {
+          throw new Error(`${error} at ${cssChunk.assetPath}`)
+        }
       }
-      const data = [...cssResults]
+      const data = [...cssResults].toString().replace(",", "")
       await writeFile(this.outputFilePath, data)
       console.log("Done")
     })
