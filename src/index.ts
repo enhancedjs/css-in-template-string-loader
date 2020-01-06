@@ -77,8 +77,7 @@ export default class SassInTemplateString {
           throw new Error(`${error} at ${cssChunk.assetPath}`)
         }
       }
-      const data = [...cssResults].toString().replace(",", "")
-      await writeFile(this.outputFilePath, data)
+      await writeFile(this.outputFilePath, cssResults.join(""))
       console.log("Done")
     })
 
