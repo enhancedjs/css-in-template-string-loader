@@ -6,6 +6,7 @@ export interface FoundTemplate {
   code: string
   tagName: CssSyntax
   value: string
+  startLine: number
 }
 
 export function findSassTemplate(source: string): FoundTemplate | undefined {
@@ -40,6 +41,7 @@ export function findSassTemplate(source: string): FoundTemplate | undefined {
     code,
     tagName: tagName as CssSyntax,
     // tslint:disable-next-line: no-eval
-    value: eval(sassCssCode)
+    value: eval(sassCssCode),
+    startLine: (source.substr(0, start).match(/\n/g) || []).length + 1
   }
 }

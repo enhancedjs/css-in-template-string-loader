@@ -1,8 +1,8 @@
 import sass, { Options, Result } from "node-sass"
 
-export async function compileSassCode(cssCode: string, syntaxType: "scss"| "sass") {
+export async function compileSassCode(cssCode: string, syntax: "scss" | "sass") {
   let result: sass.Result
-  if (syntaxType === "scss") {
+  if (syntax === "scss") {
     result = await sassRenderAsync({
       data: cssCode,
       outputStyle: "expanded"

@@ -1,4 +1,5 @@
 import { writeFile } from "fs-extra"
+import { basename } from "path"
 import { CssSyntax } from "./find-sass-template"
 import { compileSassCode } from "./sass-compiler"
 import { updateSource } from "./update-source"
@@ -12,6 +13,7 @@ interface CssChunk {
   code: string
   syntax: CssSyntax
   assetPath: string
+  assetLine: number
 }
 
 export default class SassInTemplateString {
@@ -21,7 +23,7 @@ export default class SassInTemplateString {
   constructor(options: Options) {
     this.outputFilePath = options.outputFilePath
     if (!this.outputFilePath)
-          throw new Error("No output file path provided !")
+      throw new Error("No output file path provided !")
   }
 
   apply(compiler: any) {
@@ -39,12 +41,13 @@ export default class SassInTemplateString {
           if (assetPath.endsWith(".ts") || assetPath.endsWith(".js")) {
             const updated = updateSource(mod._source._value)
             if (updated) {
-              const { result, cssSourceCode, cssSyntax, cssCodeWithoutTag } = updated
+              const { result, cssSyntax, cssCodeWithoutTag, assetLine } = updated
               mod._source._value = result
               cssChunks.push({
                 code: cssCodeWithoutTag,
                 syntax: cssSyntax,
-                assetPath
+                assetPath,
+                assetLine,
               })
             }
           }
@@ -52,35 +55,34 @@ export default class SassInTemplateString {
       })
     })
 
-
-    compiler.hooks.done.tapAsync(pluginName, async (stats: any) => {
-      const cssResults = []
-      for (const cssChunk of cssChunks) {
+    compiler.hooks.done.tapAsync(pluginName, async () => {
+      const bundle: string[] = []
+      for (const { code, syntax, assetPath, assetLine } of cssChunks) {
         try {
-          switch (cssChunk.syntax) {
+          const assetName = basename(assetPath)
+          bundle.push(`/* ${assetName} */`)
+          switch (syntax) {
             case "scss":
-              cssResults.push(await compileSassCode(cssChunk.code, "scss"))
+              bundle.push(await compileSassCode(code, "scss"))
               break
 
             case "sass":
-              cssResults.push(await compileSassCode(cssChunk.code, "sass"))
+              bundle.push(await compileSassCode(code, "sass"))
               break
 
             case "css":
-              cssResults.push(cssChunk.code)
+              bundle.push(code)
               break
 
             default:
               throw new Error("Syntax type must be specified")
           }
         } catch (error) {
-          throw new Error(`${error} at ${cssChunk.assetPath}`)
+          const prefix = "[SassInTemplateString] Error: "
+          console.error(`${prefix}${error.message ?? error} at ${assetPath}:${assetLine}`)
         }
       }
-      await writeFile(this.outputFilePath, cssResults.join(""))
-      console.log("Done")
+      await writeFile(this.outputFilePath, bundle.join("\n"))
     })
-
   }
-
 }
