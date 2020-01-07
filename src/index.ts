@@ -112,8 +112,13 @@ async function makeCssCode(cssChunks: CssChunk[]) {
           throw new Error("Syntax type must be specified")
       }
     } catch (error) {
-      const prefix = "[SassInTemplateString] Error: "
-      console.error(`${prefix}${error.message ?? error} at ${assetPath}:${assetLine}`)
+      // console.log("ERROR:", Object.entries(error))
+      const { line, column } = error
+      const l = assetLine + (line ? line - 1 : 0)
+      const c = column ? `:${column}` : ""
+      // const prefix = "[SassInTemplateString] Error: "
+      // console.error(`${prefix}${error.message ?? error} at ${assetPath}:${assetLine}`)
+      throw new Error(`${error.message ?? error} at ${assetPath}:${l}${c}`)
     }
   }
   return bundle.join("\n")
