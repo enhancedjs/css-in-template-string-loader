@@ -14,6 +14,7 @@ interface CssChunk {
   syntax: CssSyntax
   assetPath: string
   assetLine: number
+  cssStartColumn: number
 }
 
 export default class SassInTemplateString {
@@ -21,9 +22,9 @@ export default class SassInTemplateString {
   private outputFile: string
 
   constructor(options: Options) {
-    this.outputFile = options.outputFile
-    if (!this.outputFile)
+    if (!options || !options.outputFile)
       throw new Error("Missing option: 'outputFile'")
+    this.outputFile = options.outputFile
   }
 
   apply(compiler: any) {
@@ -47,13 +48,14 @@ export default class SassInTemplateString {
             assetList.push(assetPath)
             const updated = updateSource(mod._source._value)
             if (updated) {
-              const { result, cssSyntax, cssCodeWithoutTag, assetLine } = updated
+              const { result, cssSyntax, cssCodeWithoutTag, assetLine, cssStartColumn } = updated
               mod._source._value = result
               chunks.set(assetPath, {
                 code: cssCodeWithoutTag,
                 syntax: cssSyntax,
                 assetPath,
                 assetLine,
+                cssStartColumn
               })
             }
           }
@@ -69,7 +71,7 @@ export default class SassInTemplateString {
         if (chunk)
           orderedChunks.push(chunk)
       }
-      const cssCode = await makeCssCode(orderedChunks)
+      const cssCode = await makeCssCode(orderedChunks, compilation)
       compilation.assets[this.outputFile] = {
         source: () => {
           console.log("[DEBUG] source")
@@ -89,9 +91,9 @@ export default class SassInTemplateString {
   }
 }
 
-async function makeCssCode(cssChunks: CssChunk[]) {
+async function makeCssCode(cssChunks: CssChunk[], compilation: any) {
   const bundle: string[] = []
-  for (const { code, syntax, assetPath, assetLine } of cssChunks) {
+  for (const { code, syntax, assetPath, assetLine, cssStartColumn } of cssChunks) {
     try {
       const assetName = basename(assetPath)
       bundle.push(`/* ${assetName} */`)
@@ -115,10 +117,15 @@ async function makeCssCode(cssChunks: CssChunk[]) {
       // console.log("ERROR:", Object.entries(error))
       const { line, column } = error
       const l = assetLine + (line ? line - 1 : 0)
-      const c = column ? `:${column}` : ""
-      // const prefix = "[SassInTemplateString] Error: "
-      // console.error(`${prefix}${error.message ?? error} at ${assetPath}:${assetLine}`)
-      throw new Error(`${error.message ?? error} at ${assetPath}:${l}${c}`)
+      let c
+      if (l === assetLine) {
+        c = `:${cssStartColumn + (column ? column : 0)}`
+      } else {
+        c = column ? `:${column}` : ""
+      }
+
+      // tslint:disable-next-line: whitespace
+      compilation.errors.push(new Error(`${error.message ?? error} at ${assetPath}:${l}${c}`))
     }
   }
   return bundle.join("\n")

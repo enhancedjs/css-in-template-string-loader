@@ -6,6 +6,7 @@ export interface UpdateSourceOutput {
   cssSyntax: CssSyntax
   cssCodeWithoutTag: string
   assetLine: number
+  cssStartColumn: number
 }
 
 export function updateSource(source: string): UpdateSourceOutput | undefined {
@@ -20,6 +21,7 @@ export function updateSource(source: string): UpdateSourceOutput | undefined {
     cssSourceCode: foundTemplate.code,
     cssSyntax: foundTemplate.tagName,
     cssCodeWithoutTag: foundTemplate.value,
-    assetLine: foundTemplate.startLine
+    assetLine: foundTemplate.startLine,
+    cssStartColumn: foundTemplate.startColumn
   }
 }

@@ -13,11 +13,13 @@ describe("Tests of 'sassCompiler'", () => {
     end: 105,
     code: "const template = scss`h1 {\n  font-sizee: 40px;\n  code {\n    font-face: Roboto Mono;\n  }\n}`",
     tagName: "sass",
-    value: "h1 {\n  font-sizee: 40px;\n  code {\n    font-face: Roboto Mono;\n  }\n}"
+    value: "h1 {\n  font-sizee: 40px;\n  code {\n    font-face: Roboto Mono;\n  }\n}",
+    startLine: 3,
+    startColumn: 5
   }
   test("With ", async () => {
 
-    const result = await compileSassCode(foundTemplate)
+    const result = await compileSassCode(foundTemplate.value, "sass")
 
     expect(result).toBeTruthy()
   })

@@ -7,6 +7,7 @@ export interface FoundTemplate {
   tagName: CssSyntax
   value: string
   startLine: number
+  startColumn: number
 }
 
 export function findSassTemplate(source: string): FoundTemplate | undefined {
@@ -16,7 +17,7 @@ export function findSassTemplate(source: string): FoundTemplate | undefined {
   const prefix = "(css|scss|sass)"
 
   const reg = new RegExp(
-    `${lineBegin}${prefix}\\s*(${templateString})\\s*${declEnd}`,
+    `${lineBegin}(${prefix}\\s*)(${templateString})\\s*${declEnd}`,
     "g"
   )
 
@@ -26,7 +27,7 @@ export function findSassTemplate(source: string): FoundTemplate | undefined {
     return
 
   let start = found.index!
-  let [code, tagName, sassCssCode] = found
+  let [code, prefixCode, tagName, sassCssCode] = found
   if (code[0] === "\n") {
     ++start
     code = code.substr(1)
@@ -42,6 +43,7 @@ export function findSassTemplate(source: string): FoundTemplate | undefined {
     tagName: tagName as CssSyntax,
     // tslint:disable-next-line: no-eval
     value: eval(sassCssCode),
-    startLine: (source.substr(0, start).match(/\n/g) || []).length + 1
+    startLine: (source.substr(0, start).match(/\n/g) || []).length + 1,
+    startColumn: prefixCode.length + 1
   }
 }
