@@ -11,7 +11,8 @@ export interface FoundTemplate {
 }
 
 export function findSassTemplate(source: string): FoundTemplate | undefined {
-  const lineBegin = `(?:^|\\n)`
+  const newLine = `(?:\\r?\\n|\\r)`
+  const lineBegin = `(?:^|${newLine})`
   const declEnd = "(?:\\s*;)?"
   const templateString = "`(?:[^`\\\\]*(?:\\\\.[^`\\\\]*)*)`"
   const prefix = "(css|scss|sass)"
@@ -28,10 +29,15 @@ export function findSassTemplate(source: string): FoundTemplate | undefined {
 
   let start = found.index!
   let [code, prefixCode, tagName, sassCssCode] = found
-  if (code[0] === "\n") {
+
+  if (code[0] === "\r" && code[1] === "\n") {
+    start += 2
+    code = code.substr(2)
+  } else if (code[0] === "\n" || code[0] === "\r") {
     ++start
     code = code.substr(1)
   }
+
   const lastIndex = code.length - 1
   if (code[lastIndex] === ";")
     code = code.substr(0, lastIndex)
@@ -43,7 +49,7 @@ export function findSassTemplate(source: string): FoundTemplate | undefined {
     tagName: tagName as CssSyntax,
     // tslint:disable-next-line: no-eval
     value: eval(sassCssCode),
-    startLine: (source.substr(0, start).match(/\n/g) || []).length,
+    startLine: (source.substr(0, start).match(/\r?\n|\r/g) || []).length,
     startColumn: prefixCode.length + 1
   }
 }
