@@ -43,7 +43,7 @@ export function findSassTemplate(source: string): FoundTemplate | undefined {
     tagName: tagName as CssSyntax,
     // tslint:disable-next-line: no-eval
     value: eval(sassCssCode),
-    startLine: (source.substr(0, start).match(/\n/g) || []).length + 1,
+    startLine: (source.substr(0, start).match(/\n/g) || []).length,
     startColumn: prefixCode.length + 1
   }
 }

@@ -97,32 +97,15 @@ async function makeCssCode(cssChunks: CssChunk[], compilation: any) {
     try {
       const assetName = basename(assetPath)
       bundle.push(`/* ${assetName} */`)
-      switch (syntax) {
-        case "scss":
-          bundle.push(await compileSassCode(code, "scss"))
-          break
-
-        case "sass":
-          bundle.push(await compileSassCode(code, "sass"))
-          break
-
-        case "css":
-          bundle.push(code)
-          break
-
-        default:
-          throw new Error("Syntax type must be specified")
-      }
+      if (syntax === "scss" || syntax === "sass")
+        bundle.push(await compileSassCode(code, syntax))
+      else
+        bundle.push(code)
     } catch (error) {
       // console.log("ERROR:", Object.entries(error))
       const { line, column } = error
-      const l = assetLine + (line ? line - 1 : 0)
-      let c
-      if (l === assetLine) {
-        c = `:${cssStartColumn + (column ? column : 0)}`
-      } else {
-        c = column ? `:${column}` : ""
-      }
+      const l = assetLine + (line ? line : 1)
+      const c = column ? ":" + (line === 1 ? column + cssStartColumn : column) : ""
 
       // tslint:disable-next-line: whitespace
       compilation.errors.push(new Error(`${error.message ?? error} at ${assetPath}:${l}${c}`))
