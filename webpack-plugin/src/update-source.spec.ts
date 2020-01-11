@@ -12,7 +12,7 @@ describe("Tests of 'updateSource'", () => {
 ${partToExtract}
 //After`
     const updated = await updateSource(source)
-    console.log(updated)
+    // console.log(updated)
     expect(updated === undefined).toBe(false)
     // expect(updated!.cssResultCode).toBe(expect.stringContaining(partToExtract))
     expect(updated!.result).toEqual(expect.not.stringContaining(partToExtract))

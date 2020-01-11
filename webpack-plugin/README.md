@@ -1,33 +1,24 @@
-# sass-in-template-string-loader
+# sass-in-template-string-plugin
 
-Compile Vue sass templates in template strings at build time.
-
-It allow to write single file components in standard JavaScript and TypeScript source files.
+This webpack plugin compiles SASS code in JavaScript template strings. It allows to write single file components in standard JavaScript and TypeScript source files.
 
 ## How to use
 
-First, add `sass-in-template-string-loader` to a Vue application:
+First, add `sass-in-template-string-plugin` to your application:
 
 ```sh
-npm install sass-in-template-string-loader --save-dev
+npm install sass-in-template-string-plugin --save-dev
 ```
 
-In the `vue.config.js` file, add a `configureWebpack` section:
+In the webpack configuration:
 
 ```js
-  configureWebpack: {
-    module: {
-      rules: [
-        {
-          test: /\.(js|ts)$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "sass-in-template-string-loader"
-          }
-        }
-      ]
-    }
-  },
+module.exports = {
+  // …
+  plugins: [new SassInTemplateStringPlugin({
+    outputFile: `bundle.css`
+  })]
+}
 ```
 
 ## Contribute

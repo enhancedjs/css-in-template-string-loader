@@ -37,13 +37,13 @@ export default class SassInTemplateString {
     // })
 
     compiler.hooks.compilation.tap(pluginName, (bundle: any) => {
-      console.log("[DEBUG] compilation")
+      // console.log("[DEBUG] compilation")
       bundle.hooks.optimizeModules.tap(pluginName, (modules: any) => {
-        console.log("[DEBUG] optimizeModules")
+        // console.log("[DEBUG] optimizeModules")
         assetList = []
         for (const mod of modules) {
           const assetPath: string = mod.request
-          console.log("[DEBUG] optimizeModules →", assetPath)
+          // console.log("[DEBUG] optimizeModules →", assetPath)
           if (assetPath.endsWith(".ts") || assetPath.endsWith(".js")) {
             assetList.push(assetPath)
             const updated = updateSource(mod._source._value)
@@ -64,7 +64,7 @@ export default class SassInTemplateString {
     })
 
     compiler.hooks.emit.tapPromise(pluginName, async (compilation: any) => {
-      console.log("[DEBUG] emit.tapPromise")
+      // console.log("[DEBUG] emit.tapPromise")
       const orderedChunks: CssChunk[] = []
       for (const assetPath of assetList) {
         const chunk = chunks.get(assetPath)
@@ -74,11 +74,11 @@ export default class SassInTemplateString {
       const cssCode = await makeCssCode(orderedChunks, compilation)
       compilation.assets[this.outputFile] = {
         source: () => {
-          console.log("[DEBUG] source")
+          // console.log("[DEBUG] source")
           return cssCode
         },
         size: () => {
-          console.log("[DEBUG] size")
+          // console.log("[DEBUG] size")
           return cssCode.length
         }
       }

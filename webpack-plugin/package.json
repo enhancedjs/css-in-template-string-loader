@@ -1,11 +1,11 @@
 {
-  "name": "sass-in-template-string-loader",
-  "private": true,
+  "name": "sass-in-template-string-plugin",
   "version": "0.0.1",
-  "description": "Compile Vue sass templates in template strings at build time.",
+  "description": "Compiles SASS code in JavaScript template strings.",
+  "license": "CC0-1.0",
   "main": "dist/index.js",
   "scripts": {
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run lint && npm run build && npm run test",
     "clear": "rimraf 'dist/*'",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
@@ -21,25 +21,28 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.0.22",
+    "@types/jest": "^24.0.25",
     "@types/loader-utils": "^1.1.3",
-    "@types/node": "^12.12.7",
+    "@types/node": "^12.12.24",
     "@types/node-sass": "^4.11.0",
     "@types/source-map": "^0.5.7",
     "jest": "^24.9.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^24.3.0",
     "tslint": "^5.20.1",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.4"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paleo/vue-template-in-string-loader.git"
+    "url": "git+https://github.com/tomko-team/sass-in-template-string.git"
   },
-  "license": "CC0-1.0",
+  "homepage": "https://github.com/tomko-team/sass-in-template-string/tree/master/webpack-plugin",
   "keywords": [
-    "vue",
+    "scss",
     "sass",
+    "css",
+    "component",
+    "javascript",
     "template",
     "string"
   ]
