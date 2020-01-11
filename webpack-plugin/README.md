@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/tomko-team/sass-in-template-string.svg?branch=master)](https://travis-ci.com/tomko-team/sass-in-template-string)
 [![npm](https://img.shields.io/npm/dm/sass-in-template-string-plugin)](https://www.npmjs.com/package/sass-in-template-string-plugin)
 ![Type definitions](https://img.shields.io/npm/types/sass-in-template-string-plugin)
-![GitHub](https://img.shields.io/github/license/tomko-team/sass-in-template-string)
+<!-- ![GitHub](https://img.shields.io/github/license/tomko-team/sass-in-template-string) -->
 
 This webpack plugin compiles SASS code in JavaScript template strings. It allows to write single file components in standard JavaScript and TypeScript source files.
 
