@@ -34,9 +34,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paroi-tech/sass-in-template-string.git"
+    "url": "git+https://github.com/enhancedjs/sass-in-template-string.git"
   },
-  "homepage": "https://github.com/paroi-tech/sass-in-template-string/tree/master/webpack-plugin",
+  "homepage": "https://github.com/enhancedjs/sass-in-template-string/tree/master/webpack-plugin",
   "keywords": [
     "scss",
     "sass",
