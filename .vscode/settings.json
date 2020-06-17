@@ -9,22 +9,18 @@
   },
   "editor.insertSpaces": true,
   "editor.rulers": [
-    120
+    100
   ],
   "editor.tabSize": 2,
   "editor.wordWrap": "wordWrapColumn",
-  "editor.wordWrapColumn": 132,
+  "editor.wordWrapColumn": 100,
   "files.encoding": "utf8",
   "files.trimTrailingWhitespace": true,
   "javascript.format.semicolons": "remove",
   "search.useIgnoreFiles": true,
-  "tslint.configFile": "tslint.json",
-  "typescript.format.semicolons": "remove",
   "typescript.locale": "en",
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.preferences.quoteStyle": "double",
-  "typescript.tsdk": "webpack-plugin/node_modules/typescript/lib",
-  "vetur.format.defaultFormatter.ts": "vscode-typescript",
-  "vetur.format.defaultFormatter.js": "vscode-typescript",
+  "typescript.tsdk": "node_modules/typescript/lib",
   "editor.defaultFormatter": "ms-vscode.vscode-typescript-tslint-plugin",
 }
