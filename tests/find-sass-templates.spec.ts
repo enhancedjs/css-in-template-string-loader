@@ -1,8 +1,8 @@
-import { findSassTemplate } from "./find-sass-template"
+import { findCssTemplates } from "../src/find-css-templates"
 
 describe("Tests of 'findSassTemplate'", () => {
   test("With prefix 'scss' ou 'sass'", () => {
-    const result = findSassTemplate(
+    const result = findCssTemplates(
       `
       //before
 scss\`h1 {
@@ -15,7 +15,7 @@ scss\`h1 {
       `
     )
     // console.log(result)
-    expect(result).toBeDefined()
+    expect(result.length).toBe(1)
   })
 
 })

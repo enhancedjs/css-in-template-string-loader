@@ -1,28 +1,93 @@
-# sass-in-template-string-plugin
+# css-in-template-string-loader
 
-[![Build Status](https://travis-ci.com/enhancedjs/sass-in-template-string.svg?branch=master)](https://travis-ci.com/enhancedjs/sass-in-template-string)
-[![npm](https://img.shields.io/npm/dm/sass-in-template-string-plugin)](https://www.npmjs.com/package/sass-in-template-string-plugin)
-![Type definitions](https://img.shields.io/npm/types/sass-in-template-string-plugin)
-<!-- ![GitHub](https://img.shields.io/github/license/enhancedjs/sass-in-template-string) -->
+[![Build Status](https://travis-ci.com/enhancedjs/css-in-template-string-loader.svg?branch=master)](https://travis-ci.com/enhancedjs/css-in-template-string-loader)
+[![npm](https://img.shields.io/npm/dm/@enhancedjs/css-in-template-string-loader)](https://www.npmjs.com/package/@enhancedjs/css-in-template-string-loader)
+![Type definitions](https://img.shields.io/npm/types/@enhancedjs/css-in-template-string-loader)
+![GitHub](https://img.shields.io/github/license/enhancedjs/css-in-template-string-loader)
 
 This webpack plugin compiles SASS code in JavaScript template strings. It allows to write single file components in standard JavaScript and TypeScript source files.
 
-## How to use
+## Example
 
-First, add `sass-in-template-string-plugin` to your application:
+In JavaScript, add template strings with `scss`, `sass` or `css` tags:
 
-```sh
-npm install sass-in-template-string-plugin --save-dev
+```js
+scss`
+section {
+  background-color: #234;
+}
+`
 ```
 
-In the webpack configuration:
+In TypeScript, it will be required to declare a global definition for the template tag:
+
+```ts
+// global.d.ts
+declare function scss(...args: any): void
+```
+
+## How to configure
+
+First, add `@enhancedjs/css-in-template-string-loader` to your application:
+
+```sh
+npm install @enhancedjs/css-in-template-string-loader --save-dev
+```
+
+In the webpack configuration, here is an example of configuration for JavaScript source files that uses SCSS template strings:
 
 ```js
 module.exports = {
   // …
-  plugins: [new SassInTemplateStringPlugin({
-    outputFile: `bundle.css`
-  })]
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: "@enhancedjs/css-in-template-string-loader",
+            options: {
+              cssLoaders: [
+                MiniCssExtractPlugin.loader,
+                "css-loader",
+                "sass-loader"
+              ]
+            }
+          }
+        ],
+      },
+    ]
+  }
+}
+```
+
+For TypeScript source files, add the same configuration just before the `ts-loader`:
+
+```js
+module.exports = {
+  // …
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: "@enhancedjs/css-in-template-string-loader",
+            options: {
+              cssLoaders: [
+                MiniCssExtractPlugin.loader,
+                "css-loader",
+                "sass-loader"
+              ]
+            }
+          },
+          "ts-loader"
+        ]
+      },
+    ]
+  }
 }
 ```
 

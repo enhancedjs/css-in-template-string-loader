@@ -7,11 +7,8 @@
     "sourceMap": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "outDir": "dist",
     "noEmitOnError": true,
     "declaration": false
   },
-  "include": [
-    "src"
-  ]
+  "include": ["."]
 }
