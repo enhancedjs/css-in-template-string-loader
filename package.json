@@ -1,7 +1,7 @@
 {
   "name": "@enhancedjs/css-in-template-string-loader",
-  "version": "0.1.0",
-  "description": "Compiles SASS code in JavaScript template strings.",
+  "version": "0.1.1",
+  "description": "Extracts CSS and SASS code from JavaScript or TypeScript template strings.",
   "license": "CC0-1.0",
   "main": "dist/index.js",
   "scripts": {
@@ -33,8 +33,8 @@
     "scss",
     "sass",
     "css",
-    "component",
     "javascript",
+    "typescript",
     "template",
     "string"
   ],

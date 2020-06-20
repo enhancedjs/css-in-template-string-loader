@@ -2,8 +2,7 @@ export type CssSyntax = "css" | "scss" | "sass"
 
 export interface FoundTemplate {
   start: number
-  end: number
-  code: string
+  next: number
   tagName: CssSyntax
   valueToEval: string
   startLine: number
@@ -38,14 +37,11 @@ export function findCssTemplates(source: string): FoundTemplate[] {
       code = code.substr(1)
     }
 
-    const lastIndex = code.length - 1
-    if (code[lastIndex] === ";")
-      code = code.substr(0, lastIndex)
+    const next = start + code.length
 
     result.push({
       start,
-      end: start + code.length,
-      code,
+      next,
       tagName: tagName as CssSyntax,
       valueToEval,
       startLine: countLines(source.substr(0, start)),

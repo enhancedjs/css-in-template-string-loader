@@ -11,13 +11,17 @@ export function replaceCssWithImport(source: string, options: ReplaceCssWithImpo
 
   let result = source
   for (const found of foundTemplates) {
-    const loaders = `!${options.cssLoaders.join("!")}!@enhancedjs/css-in-template-string-loader!`
-    const importCode = `import "${loaders}./${options.fileName}?extractcss&tag=${found.tagName}";`
+    const moduleName = options.fileName.replace(/\.[^/.]+$/, "")
+    const loaders = [...options.cssLoaders, "@enhancedjs/css-in-template-string-loader"]
+      // Resolve in order to be able to process imported source files from outside the package
+      .map(loader => require.resolve(loader))
+    const prefix = `!${loaders.join("!")}!`
+    const importCode = `import "${prefix}./${moduleName}?extractcss&tag=${found.tagName}";`
     const padding = "\n".repeat(found.lineCount)
     result = result.substr(0, found.start)
       + importCode
       + padding
-      + result.substr(found.end)
+      + result.substr(found.next)
   }
 
   return result
